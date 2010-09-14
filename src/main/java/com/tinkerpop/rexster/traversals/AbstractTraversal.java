@@ -8,14 +8,11 @@ import com.tinkerpop.blueprints.pgm.impls.neo4j.Neo4jGraph;
 import com.tinkerpop.rexster.BaseResource;
 import com.tinkerpop.rexster.ResultObjectCache;
 import com.tinkerpop.rexster.RexsterApplication;
+import com.tinkerpop.rexster.RexsterResponse;
 import com.tinkerpop.rexster.Tokens;
 import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
-import org.restlet.data.Form;
-import org.restlet.data.MediaType;
-import org.restlet.data.Reference;
 import org.restlet.representation.Representation;
-import org.restlet.representation.StringRepresentation;
 import org.restlet.resource.Get;
 
 import java.util.*;
@@ -44,24 +41,25 @@ public abstract class AbstractTraversal extends BaseResource implements Traversa
     //@Get
     public Representation evaluate() {
         Map<String, String> queryParameters = createQueryMap(this.getRequest().getResourceRef().getQueryAsForm());
-        
+
         String graphName = this.getRequest().getResourceRef().getSegments().get(0);
         this.graph = ((RexsterApplication) this.getApplication()).getGraph(graphName);
-        
+
         this.buildRequestObject(queryParameters);
         this.preQuery();
         if (!usingCachedResult)
             this.traverse();
         this.postQuery();
-        return new StringRepresentation(this.resultObject.toJSONString(), MediaType.APPLICATION_JSON);
+
+        return RexsterResponse.getStringRepresentation(this.getRequest(), this.resultObject);
     }
 
     @Get
     public Representation evaluate(final String json) {
-    	
+
     	String graphName = this.getRequest().getResourceRef().getSegments().get(0);
         this.graph = ((RexsterApplication) this.getApplication()).getGraph(graphName);
-    	
+
         if (null == json || json.length() == 0)
             return this.evaluate();
         else {
@@ -70,7 +68,8 @@ public abstract class AbstractTraversal extends BaseResource implements Traversa
             if (!usingCachedResult)
                 this.traverse();
             this.postQuery();
-            return new StringRepresentation(this.resultObject.toJSONString(), MediaType.APPLICATION_JSON);
+
+            return RexsterResponse.getStringRepresentation(this.getRequest(), this.resultObject);
         }
     }
 

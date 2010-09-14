@@ -24,7 +24,7 @@ public class RexsterGraphResource extends ServerResource {
         sh.stopWatch();
         JSONObject resultObject = new JSONObject();
         resultObject.put("name", "Rexster: A RESTful Graph Shell");
-        
+
         String graphName = this.getRequest().getResourceRef().getSegments().get(0);
         Graph graph = this.getRexsterApplication().getGraph(graphName);
         resultObject.put("graph", graph.toString());
@@ -34,11 +34,11 @@ public class RexsterGraphResource extends ServerResource {
             queriesArray.add(traversal.getKey());
         }
         resultObject.put("traversals", queriesArray);
-        
+
         resultObject.put("query_time", sh.stopWatch());
         resultObject.put("up_time", this.getTimeAlive());
         resultObject.put("version", RexsterApplication.getVersion());
-        return new StringRepresentation(resultObject.toJSONString(), MediaType.APPLICATION_JSON);
+        return RexsterResponse.getStringRepresentation(this.getRequest(), resultObject);
     }
 
     private String getTimeAlive() {

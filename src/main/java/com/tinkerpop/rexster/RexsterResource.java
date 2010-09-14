@@ -1,14 +1,9 @@
 package com.tinkerpop.rexster;
 
-import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
-import org.restlet.data.MediaType;
 import org.restlet.representation.Representation;
-import org.restlet.representation.StringRepresentation;
 import org.restlet.resource.Get;
 import org.restlet.resource.ServerResource;
-
-import java.util.Map;
 
 /**
  * @author Marko A. Rodriguez (http://markorodriguez.com)
@@ -25,7 +20,7 @@ public class RexsterResource extends ServerResource {
         resultObject.put("query_time", sh.stopWatch());
         resultObject.put("up_time", this.getTimeAlive());
         resultObject.put("version", RexsterApplication.getVersion());
-        return new StringRepresentation(resultObject.toJSONString(), MediaType.APPLICATION_JSON);
+        return RexsterResponse.getStringRepresentation(this.getRequest(), resultObject);
     }
 
     private String getTimeAlive() {

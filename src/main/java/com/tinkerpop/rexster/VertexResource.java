@@ -7,10 +7,7 @@ import com.tinkerpop.blueprints.pgm.Vertex;
 import com.tinkerpop.rexster.traversals.ElementJSONObject;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
-import org.restlet.data.Form;
-import org.restlet.data.MediaType;
 import org.restlet.representation.Representation;
-import org.restlet.representation.StringRepresentation;
 import org.restlet.resource.Delete;
 import org.restlet.resource.Get;
 import org.restlet.resource.Post;
@@ -29,9 +26,9 @@ public class VertexResource extends BaseResource {
         this.buildRequestObject(queryParameters);
         String id = (String) getRequest().getAttributes().get(Tokens.ID);
         String direction = (String) getRequest().getAttributes().get(Tokens.DIRECTION);
-        
+
     	String graphName = this.getRequest().getResourceRef().getSegments().get(0);
-        
+
         if (null == direction && null == id)
             getVertices(graphName);
         else if (null == direction)
@@ -40,13 +37,13 @@ public class VertexResource extends BaseResource {
             getVertexEdges(graphName, id, direction);
 
         this.resultObject.put(Tokens.QUERY_TIME, sh.stopWatch());
-        return new StringRepresentation(this.resultObject.toJSONString(), MediaType.APPLICATION_JSON);
+        return RexsterResponse.getStringRepresentation(this.getRequest(), this.resultObject);
     }
 
     @Post
     public Representation postResource() {
         this.buildRequestObject(createQueryMap(this.getRequest().getResourceRef().getQueryAsForm()));
-        
+
         String graphName = this.getRequest().getResourceRef().getSegments().get(0);
         final Graph graph = this.getRexsterApplication().getGraph(graphName);
         final Object id = getRequest().getAttributes().get(Tokens.ID);
@@ -61,14 +58,14 @@ public class VertexResource extends BaseResource {
         }
         this.resultObject.put(Tokens.RESULTS, new ElementJSONObject(vertex, this.getReturnKeys()));
         this.resultObject.put(Tokens.QUERY_TIME, sh.stopWatch());
-        return new StringRepresentation(this.resultObject.toJSONString(), MediaType.APPLICATION_JSON);
+        return RexsterResponse.getStringRepresentation(this.getRequest(), this.resultObject);
     }
 
     @Delete
     public Representation deleteResource() {
         // TODO: delete individual properties
         final String id = (String) getRequest().getAttributes().get(Tokens.ID);
-        
+
         String graphName = this.getRequest().getResourceRef().getSegments().get(0);
         final Graph graph = this.getRexsterApplication().getGraph(graphName);
         final Vertex vertex = graph.getVertex(id);
@@ -76,8 +73,7 @@ public class VertexResource extends BaseResource {
             graph.removeVertex(vertex);
 
         this.resultObject.put(Tokens.QUERY_TIME, sh.stopWatch());
-        return new StringRepresentation(this.resultObject.toJSONString(), MediaType.APPLICATION_JSON);
-
+        return RexsterResponse.getStringRepresentation(this.getRequest(), this.resultObject);
     }
 
     ///////////////////////

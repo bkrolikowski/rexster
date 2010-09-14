@@ -6,9 +6,7 @@ import com.tinkerpop.blueprints.pgm.Graph;
 import com.tinkerpop.blueprints.pgm.Vertex;
 import com.tinkerpop.rexster.traversals.ElementJSONObject;
 import org.json.simple.JSONArray;
-import org.restlet.data.MediaType;
 import org.restlet.representation.Representation;
-import org.restlet.representation.StringRepresentation;
 import org.restlet.resource.Delete;
 import org.restlet.resource.Get;
 import org.restlet.resource.Post;
@@ -36,14 +34,14 @@ public class EdgeResource extends BaseResource {
 
 
         this.resultObject.put(Tokens.QUERY_TIME, sh.stopWatch());
-        return new StringRepresentation(this.resultObject.toJSONString(), MediaType.APPLICATION_JSON);
+        return RexsterResponse.getStringRepresentation(this.getRequest(), this.resultObject);
     }
 
     @Post
     public Representation postResource() {
 
         this.buildRequestObject(createQueryMap(this.getRequest().getResourceRef().getQueryAsForm()));
-        
+
         String graphName = this.getRequest().getResourceRef().getSegments().get(0);
         final Graph graph = this.getRexsterApplication().getGraph(graphName);
         final String id = (String) getRequest().getAttributes().get(Tokens.ID);
@@ -77,14 +75,14 @@ public class EdgeResource extends BaseResource {
 
         this.resultObject.put(Tokens.QUERY_TIME, sh.stopWatch());
 
-        return new StringRepresentation(this.resultObject.toJSONString(), MediaType.APPLICATION_JSON);
+        return RexsterResponse.getStringRepresentation(this.getRequest(), this.resultObject);
     }
 
     @Delete
     public Representation deleteResource() {
         // TODO: delete individual properties
         final String id = (String) getRequest().getAttributes().get(Tokens.ID);
-        
+
         String graphName = this.getRequest().getResourceRef().getSegments().get(0);
         final Graph graph = this.getRexsterApplication().getGraph(graphName);
         final Edge edge = graph.getEdge(id);
@@ -92,7 +90,7 @@ public class EdgeResource extends BaseResource {
             graph.removeEdge(edge);
 
         this.resultObject.put(Tokens.QUERY_TIME, sh.stopWatch());
-        return new StringRepresentation(this.resultObject.toJSONString(), MediaType.APPLICATION_JSON);
+        return RexsterResponse.getStringRepresentation(this.getRequest(), this.resultObject);
 
     }
 
